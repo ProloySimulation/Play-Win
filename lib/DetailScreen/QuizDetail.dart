@@ -4,7 +4,7 @@ import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../Data/Question.dart';
-import '../util/SharedPreferences.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class quizScreen extends StatefulWidget {
   const quizScreen({Key? key}) : super(key: key);
@@ -218,12 +218,28 @@ class _MyWidgetState extends State<MyWidget> {
 
 
 Future<Question> fetchQuestion() async {
-
   // Toast.show("Success", duration: Toast.lengthShort, gravity:  Toast.bottom);
-  final response = await http.get(Uri.parse('https://ec69-103-166-187-82.ngrok.io/api/quiz/1/'+"1"+'?time=10:49:00'));
-  if (response.statusCode == 200) {
-    return Question.fromJson(jsonDecode(response.body)['questions_date'][0]);
-  } else {
+  try {
+    final response = await http.get(Uri.parse(
+        'https://playandwin.xosstech.com/backend/public/api/quiz/1/' + "1" +
+            '?time=10:49:00'));
+    if (response.statusCode == 200) {
+      return Question.fromJson(jsonDecode(response.body)['questions_date'][0]);
+    } else {
+      throw Exception('Failed to load question');
+    }
+  }
+  catch (e) {
+    print(e);
+    Fluttertoast.showToast(
+      msg: 'The Quiz Has Not Started Yet',
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.red,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
     throw Exception('Failed to load question');
   }
 }

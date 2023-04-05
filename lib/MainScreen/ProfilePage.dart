@@ -40,7 +40,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<Profile> fetchData() async {
     final response =
-    await http.get(Uri.parse('https://b571-103-166-187-82.ngrok.io/api/user/1'));
+    await http.get(Uri.parse('https://playandwin.xosstech.com/backend/public/api/user/1'));
     if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body);
       return Profile.fromJson(jsonResponse);

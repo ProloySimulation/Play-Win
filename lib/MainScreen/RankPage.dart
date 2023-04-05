@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:playandwin/util/colors.dart';
 
 class RankScreen extends StatefulWidget {
   const RankScreen({Key? key}) : super(key: key);
@@ -22,7 +23,7 @@ class _RankScreenState extends State<RankScreen> {
 
   Future<void> _fetchScoreBoard() async {
     final response =
-    await http.get(Uri.parse('https://eade-103-166-187-83.ap.ngrok.io/api/ranking'));
+    await http.get(Uri.parse('https://playandwin.xosstech.com/backend/public/api/ranking'));
 
     if (response.statusCode == 200) {
       setState(() {
@@ -39,27 +40,36 @@ class _RankScreenState extends State<RankScreen> {
       appBar: AppBar(
         title: Text('Score Board'),
       ),
-      body: ListView.builder(
-        itemCount: _scoreList.length,
-        itemBuilder: (BuildContext context, int index) {
-          final score = _scoreList[index];
-          return Container(
-            width: MediaQuery.of(context).size.width < 600 ? double.infinity : 400,
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(score['name']),
-                    Text(score['time']),
-                    Text(score['score']),
-                  ],
+      body: Center(
+        child: Container(
+          color: backgroundColor,
+          width: MediaQuery.of(context).size.width < 600 ? double.infinity : 400,
+          child: ListView.builder(
+            itemCount: _scoreList.length,
+            itemBuilder: (BuildContext context, int index) {
+              final score = _scoreList[index];
+              return Container(
+                child: Card(
+                  color: rankCardColor,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(score['name'],
+                        style: TextStyle(color: textColor),),
+                        Text(score['time'],
+                          style: TextStyle(color: textColor),),
+                        Text(score['score'],
+                          style: TextStyle(color: textColor),),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          );
-        },
+              );
+            },
+          ),
+        ),
       ),
     );
   }
