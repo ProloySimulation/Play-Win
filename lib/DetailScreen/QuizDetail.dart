@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import '../Data/Question.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+import '../util/colors.dart';
+
 class quizScreen extends StatefulWidget {
   const quizScreen({Key? key}) : super(key: key);
 
@@ -19,18 +21,20 @@ class _quizScreenState extends State<quizScreen> {
   late String _questionNumber;
   bool _isLoading = true;
 
-  @override
+  /*@override
   void initState() {
     // TODO: implement initState
     super.initState();
 
-    _futureQuestion = fetchQuestion();
-  }
+    // _futureQuestion = fetchQuestion();
+  }*/
 
   @override
   Widget build(BuildContext context) {
+    _futureQuestion = fetchQuestion(context);
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: cardColor,
         title: Text('Quiz Screen'),
       ),
       body: FutureBuilder<Question>(
@@ -217,37 +221,44 @@ class _MyWidgetState extends State<MyWidget> {
 }
 
 
-Future<Question> fetchQuestion() async {
-  // Toast.show("Success", duration: Toast.lengthShort, gravity:  Toast.bottom);
-  try {
-    final response = await http.get(Uri.parse(
-        'https://playandwin.xosstech.com/backend/public/api/quiz/1/' + "1" +
-            '?time=10:49:00'));
-    if (response.statusCode == 200) {
-      return Question.fromJson(jsonDecode(response.body)['questions_date'][0]);
-    } else {
-      throw Exception('Failed to load question');
+Future<Question> fetchQuestion(BuildContext context) async {
+  final response = await http.get(Uri.parse(
+      'https://playandwin.xosstech.com/backend/public/api/quiz/1/1?time=10:49:00'));
+  if (response.statusCode == 200) {
+    return Question.fromJson(jsonDecode(response.body)['data'][0]);
+  } else {
+    String errorMessage = "";
+    try {
+      Map<String, dynamic> errorResponse = jsonDecode(response.body);
+      errorMessage = errorResponse['message'];
+    } catch (e) {
+      errorMessage = "Failed to load question";
     }
-  }
-  catch (e) {
-    print(e);
-    Fluttertoast.showToast(
-      msg: 'The Quiz Has Not Started Yet',
-      toastLength: Toast.LENGTH_LONG,
-      gravity: ToastGravity.BOTTOM,
-      timeInSecForIosWeb: 1,
-      backgroundColor: Colors.red,
-      textColor: Colors.white,
-      fontSize: 16.0,
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("QUIZ UPDATE"),
+          content: Text(errorMessage),
+          actions: [
+            MaterialButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
-    throw Exception('Failed to load question');
+    throw Exception(errorMessage);
   }
 }
 
 Future<void> submitQuizAnswer(BuildContext context,int questionId,int quizId,String submitAns) async {
   // Toast.show("Success", duration: Toast.lengthShort, gravity:  Toast.bottom);
   final response = await http.post(
-    Uri.parse("https://ec69-103-166-187-82.ngrok.io/api/submit_ans"),
+    Uri.parse("https://playandwin.xosstech.com/backend/public/api/submit_ans"),
     body: {
       'user_id': "1",
       'question_id': questionId.toString(),

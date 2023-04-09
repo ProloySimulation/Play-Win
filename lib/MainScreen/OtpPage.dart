@@ -3,7 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:playandwin/home.dart';
 
 class OtpScreen extends StatefulWidget {
-  const OtpScreen({Key? key}) : super(key: key);
+  final String verificationId;
+  const OtpScreen({Key? key, required this.verificationId}) : super(key: key);
 
   @override
   State<OtpScreen> createState() => _OtpScreenState();
@@ -11,7 +12,7 @@ class OtpScreen extends StatefulWidget {
 
 class _OtpScreenState extends State<OtpScreen> {
 
-  // FirebaseAuth _auth = FirebaseAuth.instance;
+  FirebaseAuth _auth = FirebaseAuth.instance;
   final List<TextEditingController> _controllers =
   List.generate(6, (_) => TextEditingController());
   final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
@@ -83,14 +84,24 @@ class _OtpScreenState extends State<OtpScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (BuildContext context) => HomePage(),
-                        ),
-                      );
-                      // TODO: Implement login functionality
+                    onPressed: () async {
+                      String code = _controllers.map((c) => c.text).join();
+                      PhoneAuthCredential credential = PhoneAuthProvider.credential(verificationId: widget.verificationId, smsCode: code);
+                      await _auth.signInWithCredential(credential);
+                      try
+                      {
+                        // Navigate to the home page or perform any other action
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) => HomePage(),
+                          ),
+                        );
+                      }
+                      catch(e)
+                      {
+
+                      }
                     },
                     child: Text('Login'),
                   ),
@@ -103,7 +114,7 @@ class _OtpScreenState extends State<OtpScreen> {
     );
   }
 
-  /*Future<void> signInWithPhoneNumber(String verificationId, String smsCode) async {
+  Future<void> signInWithPhoneNumber(String verificationId, String smsCode) async {
     // Create a PhoneAuthCredential with the code
     PhoneAuthCredential credential = PhoneAuthProvider.credential(
       verificationId: verificationId,
@@ -112,8 +123,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
     // Sign the user in with the credential
     await _auth.signInWithCredential(credential);
-  }*/
-
+  }
 }
 
 

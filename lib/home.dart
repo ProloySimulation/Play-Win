@@ -3,6 +3,7 @@ import 'package:playandwin/MainScreen/NotificationPage.dart';
 import 'package:playandwin/MainScreen/PaymentPage.dart';
 import 'package:playandwin/MainScreen/ProfilePage.dart';
 import 'package:playandwin/MainScreen/SettingPage.dart';
+import 'package:playandwin/util/colors.dart';
 
 import 'MainScreen/HomePage.dart';
 
@@ -32,7 +33,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('My App'),
+        title: Text('Play & Win'),
+        backgroundColor: cardColor,
       ),
       body: Center(
         child: _widgetOptions.elementAt(_currentIndex),

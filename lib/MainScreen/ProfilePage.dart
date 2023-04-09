@@ -114,7 +114,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     Row(
                                       children: [
                                         Text("Email: "),
-                                        Text(data?.email ?? ''),
+                                        Text("test@gmail.com"),
                                       ],
                                     ),
                                   ],

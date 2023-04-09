@@ -18,7 +18,6 @@ class Data {
   String number;
   String balance;
   String image;
-  String email;
   String createdAt;
   String updatedAt;
 
@@ -28,7 +27,6 @@ class Data {
     required this.number,
     required this.balance,
     required this.image,
-    required this.email,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -40,7 +38,6 @@ class Data {
       number: json['number'],
       balance: json['balance'],
       image: json['image'],
-      email: json['email'],
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
     );

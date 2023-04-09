@@ -38,6 +38,7 @@ class _RankScreenState extends State<RankScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: cardColor,
         title: Text('Score Board'),
       ),
       body: Center(
