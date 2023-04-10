@@ -17,7 +17,7 @@ class Data {
   String name;
   String number;
   String balance;
-  String image;
+  String? image;
   String createdAt;
   String updatedAt;
 
@@ -26,7 +26,7 @@ class Data {
     required this.name,
     required this.number,
     required this.balance,
-    required this.image,
+    this.image,
     required this.createdAt,
     required this.updatedAt,
   });

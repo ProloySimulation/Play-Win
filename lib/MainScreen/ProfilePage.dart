@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:playandwin/Data/Profile.dart';
+import 'package:playandwin/util/SharedPreferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -17,6 +18,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
 
   String? base64Image;
+  late String userId;
 
   Future pickImage() async {
     final html.FileUploadInputElement input =
@@ -39,8 +41,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<Profile> fetchData() async {
+    userId = await getUserIdPreferences("USER_ID") as String;
     final response =
-    await http.get(Uri.parse('https://playandwin.xosstech.com/backend/public/api/user/1'));
+    await http.get(Uri.parse('https://playandwin.xosstech.com/backend/public/api/user/'+userId));
     if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body);
       return Profile.fromJson(jsonResponse);

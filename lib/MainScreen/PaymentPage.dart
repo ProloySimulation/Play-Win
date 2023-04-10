@@ -1,10 +1,27 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:html' as html;
 import 'package:http/http.dart' as http;
+import '../Data/Profile.dart';
+import '../util/SharedPreferences.dart';
 import '../util/colors.dart';
 
 class PaymentScreen extends StatelessWidget {
+
+  late String user_id ;
+  Future<Profile> fetchData() async {
+    String userId = await getUserIdPreferences("USER_ID") as String;
+    final response =
+    await http.get(Uri.parse('https://playandwin.xosstech.com/backend/public/api/user/'+userId));
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body);
+      return Profile.fromJson(jsonResponse);
+    } else {
+      throw Exception('Failed to load data');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,40 +35,63 @@ class PaymentScreen extends StatelessWidget {
               width: MediaQuery.of(context).size.width < 600 ? double.infinity : 400,
               child: Column(
                 children: [
-                  Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    elevation: 5,
-                    color: cardColor,
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Center(
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                  FutureBuilder<Profile>(
+                    future: fetchData(),
+                    builder: (BuildContext context, AsyncSnapshot snapshot)
+                    {
+                      if(snapshot.connectionState == ConnectionState.waiting)
+                        {
+                          return Center(child: CircularProgressIndicator());
+                        }
+                      else
+                        {
+                          final data = snapshot.data?.data;
+                          user_id = (data?.id).toString();
+                          return Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            elevation: 5,
+                            color: cardColor,
+                            child: Column(
                               children: [
-                                Text(
-                                  'Balance - 100 BDT',
-                                  style: TextStyle(
-                                    color: textColor,
-                                    fontSize: 20.0,
-                                    fontWeight: FontWeight.bold,
+                                Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Center(
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'Balance - ',
+                                          style: TextStyle(
+                                            color: textColor,
+                                            fontSize: 20.0,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          data?.balance ?? '',
+                                          style: TextStyle(
+                                            color: textColor,
+                                            fontSize: 20.0,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(height: 8.0),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                                SizedBox(height: 8.0),
                               ],
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
+                          );
+                        }
+                    },
                   ),
                   GestureDetector(
                     onTap: ()
                     {
-                      html.window.open("https://playandwin.xosstech.com/Payment/bkash/payment.php?user_id=1&id=PNW10win", '_blank');
+                      html.window.open("https://playandwin.xosstech.com/Payment/bkash/payment.php?user_id="+user_id+"&id=PNW10win", '_blank');
                     },
                     child: Card(
                       shape: RoundedRectangleBorder(
@@ -157,10 +197,11 @@ class PaymentScreen extends StatelessWidget {
     );
   }
 
+
   Future<void> nagadCallBack() async {
     String url = 'https://playandwin.xosstech.com/Payment/nagad/index.php';
     Map<String, String> body = {
-      'amount': "10",
+      'amount': "20",
       'user_id': "1",
     };
 

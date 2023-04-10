@@ -97,7 +97,7 @@ class LoginScreen extends StatelessWidget {
         // Navigate to the verification screen.
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => OtpScreen(verificationId: verificationId)),
+          MaterialPageRoute(builder: (context) => OtpScreen(verificationId: verificationId,phoneNumber:phoneNumber)),
         );
       },
       codeAutoRetrievalTimeout: (String verificationId) {

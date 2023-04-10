@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:playandwin/util/SharedPreferences.dart';
 import '../Data/Question.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -18,8 +19,6 @@ class quizScreen extends StatefulWidget {
 class _quizScreenState extends State<quizScreen> {
 
   late Future<Question> _futureQuestion;
-  late String _questionNumber;
-  bool _isLoading = true;
 
   /*@override
   void initState() {
@@ -63,6 +62,7 @@ class MyWidget extends StatefulWidget {
 
 class _MyWidgetState extends State<MyWidget> {
   late String _selectedOption,_questionNumber;
+  late String userId;
   final CountDownController _controller = CountDownController();
 
   @override
@@ -71,6 +71,7 @@ class _MyWidgetState extends State<MyWidget> {
     super.initState();
     _selectedOption = '';
     _questionNumber = "1";
+    userId = getUserIdPreferences("USER_ID") as String;
   }
   @override
   Widget build(BuildContext context) {
@@ -220,10 +221,10 @@ class _MyWidgetState extends State<MyWidget> {
   }
 }
 
-
 Future<Question> fetchQuestion(BuildContext context) async {
+  String userId = await getUserIdPreferences("USER_ID") as String;
   final response = await http.get(Uri.parse(
-      'https://playandwin.xosstech.com/backend/public/api/quiz/1/1?time=10:49:00'));
+      'https://playandwin.xosstech.com/backend/public/api/quiz/1/'+userId+'?time=10:49:00'));
   if (response.statusCode == 200) {
     return Question.fromJson(jsonDecode(response.body)['data'][0]);
   } else {
@@ -256,11 +257,11 @@ Future<Question> fetchQuestion(BuildContext context) async {
 }
 
 Future<void> submitQuizAnswer(BuildContext context,int questionId,int quizId,String submitAns) async {
-  // Toast.show("Success", duration: Toast.lengthShort, gravity:  Toast.bottom);
+  String userId = await getUserIdPreferences("USER_ID") as String;
   final response = await http.post(
     Uri.parse("https://playandwin.xosstech.com/backend/public/api/submit_ans"),
     body: {
-      'user_id': "1",
+      'user_id': userId,
       'question_id': questionId.toString(),
       'quiz_id':quizId.toString(),
       'submit_ans': submitAns,

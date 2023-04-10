@@ -77,32 +77,34 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   ),
                 ),
                 Container(
-                  child: ListView.builder(
-                    itemCount: _notificationList.length,
-                    itemBuilder: (BuildContext context,int index)
-                    {
-                      final notificationList = _notificationList[index];
-                      return Row(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(right: 8.0),
-                            child: Icon(
-                              Icons.brightness_1,
-                              color: Colors.white,
-                              size: 12.0,
-                            ),
-                          ),
-                          Expanded(
-                            child: ListTile(
-                              title: Text(
-                                notificationList['description'],
-                                style: TextStyle(fontSize: 16.0,color: textColor),
+                  child: Expanded(
+                    child: ListView.builder(
+                      itemCount: _notificationList.length,
+                      itemBuilder: (BuildContext context,int index)
+                      {
+                        final notificationList = _notificationList[index];
+                        return Row(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(right: 8.0),
+                              child: Icon(
+                                Icons.brightness_1,
+                                color: Colors.white,
+                                size: 12.0,
                               ),
                             ),
-                          ),
-                        ],
-                      );
-                    },
+                            Expanded(
+                              child: ListTile(
+                                title: Text(
+                                  notificationList['description'],
+                                  style: TextStyle(fontSize: 16.0,color: textColor),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
                   ),
                 )
               ],

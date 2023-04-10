@@ -1,10 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:playandwin/home.dart';
+import 'package:http/http.dart' as http;
+
+import '../util/SharedPreferences.dart';
 
 class OtpScreen extends StatefulWidget {
-  final String verificationId;
-  const OtpScreen({Key? key, required this.verificationId}) : super(key: key);
+  final String verificationId,phoneNumber;
+  const OtpScreen({Key? key, required this.verificationId, required this.phoneNumber}) : super(key: key);
 
   @override
   State<OtpScreen> createState() => _OtpScreenState();
@@ -30,7 +35,10 @@ class _OtpScreenState extends State<OtpScreen> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Container(
-            width: MediaQuery.of(context).size.width < 600 ? double.infinity : 400,
+            width: MediaQuery
+                .of(context)
+                .size
+                .width < 600 ? double.infinity : 400,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -59,25 +67,26 @@ class _OtpScreenState extends State<OtpScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: List.generate(
                     6,
-                        (index) => SizedBox(
-                      width: 40.0,
-                      height: 40.0,
-                      child: TextField(
-                        controller: _controllers[index],
-                        focusNode: _focusNodes[index],
-                        textAlign: TextAlign.center,
-                        keyboardType: TextInputType.number,
-                        maxLength: 1,
-                        onChanged: (value) {
-                          if (value.isNotEmpty) {
-                            _focusNodes[(index + 1) % 6].requestFocus();
-                          }
-                        },
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
+                        (index) =>
+                        SizedBox(
+                          width: 40.0,
+                          height: 40.0,
+                          child: TextField(
+                            controller: _controllers[index],
+                            focusNode: _focusNodes[index],
+                            textAlign: TextAlign.center,
+                            keyboardType: TextInputType.number,
+                            maxLength: 1,
+                            onChanged: (value) {
+                              if (value.isNotEmpty) {
+                                _focusNodes[(index + 1) % 6].requestFocus();
+                              }
+                            },
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
                   ),
                 ),
                 SizedBox(height: 16.0),
@@ -86,20 +95,14 @@ class _OtpScreenState extends State<OtpScreen> {
                   child: ElevatedButton(
                     onPressed: () async {
                       String code = _controllers.map((c) => c.text).join();
-                      PhoneAuthCredential credential = PhoneAuthProvider.credential(verificationId: widget.verificationId, smsCode: code);
+                      PhoneAuthCredential credential = PhoneAuthProvider
+                          .credential(
+                          verificationId: widget.verificationId, smsCode: code);
                       await _auth.signInWithCredential(credential);
-                      try
-                      {
-                        // Navigate to the home page or perform any other action
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (BuildContext context) => HomePage(),
-                          ),
-                        );
+                      try {
+                        getUserid();
                       }
-                      catch(e)
-                      {
+                      catch (e) {
 
                       }
                     },
@@ -114,16 +117,20 @@ class _OtpScreenState extends State<OtpScreen> {
     );
   }
 
-  Future<void> signInWithPhoneNumber(String verificationId, String smsCode) async {
-    // Create a PhoneAuthCredential with the code
-    PhoneAuthCredential credential = PhoneAuthProvider.credential(
-      verificationId: verificationId,
-      smsCode: smsCode,
-    );
+  Future<void> getUserid() async {
+    String url = 'https://playandwin.xosstech.com/backend/public/api/login';
+    Map<String, String> body = {
+      'number': widget.phoneNumber,
+    };
 
-    // Sign the user in with the credential
-    await _auth.signInWithCredential(credential);
+    http.post(Uri.parse(url), body: body).then((response) {
+      Map<String, dynamic> jsonResponse = json.decode(response.body);
+      int id = jsonResponse['data']['id'];
+      setUserIdPreferences("USER_ID", id.toString());
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    }).catchError((error) {});
   }
 }
-
-
