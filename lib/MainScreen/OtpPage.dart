@@ -6,6 +6,7 @@ import 'package:playandwin/home.dart';
 import 'package:http/http.dart' as http;
 
 import '../util/SharedPreferences.dart';
+import '../util/colors.dart';
 
 class OtpScreen extends StatefulWidget {
   final String verificationId,phoneNumber;
@@ -35,6 +36,7 @@ class _OtpScreenState extends State<OtpScreen> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Container(
+            color: backgroundColor,
             width: MediaQuery
                 .of(context)
                 .size
@@ -53,13 +55,14 @@ class _OtpScreenState extends State<OtpScreen> {
                   style: TextStyle(
                     fontSize: 24.0,
                     fontWeight: FontWeight.bold,
+                    color: Colors.white
                   ),
                 ),
                 Text(
                   'Please enter the OTP sent to your mobile',
                   style: TextStyle(
                     fontSize: 16.0,
-                    color: Colors.grey[700],
+                    color: Colors.white,
                   ),
                 ),
                 SizedBox(height: 50.0),
@@ -67,46 +70,57 @@ class _OtpScreenState extends State<OtpScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: List.generate(
                     6,
-                        (index) =>
-                        SizedBox(
-                          width: 40.0,
-                          height: 40.0,
-                          child: TextField(
-                            controller: _controllers[index],
-                            focusNode: _focusNodes[index],
-                            textAlign: TextAlign.center,
-                            keyboardType: TextInputType.number,
-                            maxLength: 1,
-                            onChanged: (value) {
-                              if (value.isNotEmpty) {
-                                _focusNodes[(index + 1) % 6].requestFocus();
-                              }
-                            },
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                            ),
+                        (index) => SizedBox(
+                      width: 40.0,
+                      height: 40.0,
+                      child: Container(
+                        color: Colors.white,
+                        child: TextField(
+                          controller: _controllers[index],
+                          focusNode: _focusNodes[index],
+                          textAlign: TextAlign.center,
+                          keyboardType: TextInputType.number,
+                          maxLength: 1,
+                          onChanged: (value) {
+                            if (value.isNotEmpty) {
+                              _focusNodes[(index + 1) % 6].requestFocus();
+                            }
+                          },
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            counterText: '',
                           ),
                         ),
+                      ),
+                    ),
                   ),
                 ),
                 SizedBox(height: 16.0),
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      String code = _controllers.map((c) => c.text).join();
-                      PhoneAuthCredential credential = PhoneAuthProvider
-                          .credential(
-                          verificationId: widget.verificationId, smsCode: code);
-                      await _auth.signInWithCredential(credential);
-                      try {
-                        getUserid();
-                      }
-                      catch (e) {
+                  child: Container(
+                    margin: EdgeInsets.all(20.0),
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        String code = _controllers.map((c) => c.text).join();
+                        PhoneAuthCredential credential = PhoneAuthProvider
+                            .credential(
+                            verificationId: widget.verificationId, smsCode: code);
+                        await _auth.signInWithCredential(credential);
+                        try {
+                          getUserid();
+                        }
+                        catch (e) {
 
-                      }
-                    },
-                    child: Text('Login'),
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: backgroundColor, // sets the button color
+                        onPrimary: Colors.white, // sets the text color
+                        side: BorderSide(width: 1, color: rankCardColor), // sets the border color and width
+                      ),
+                      child: Text('Submit'),
+                    ),
                   ),
                 ),
               ],

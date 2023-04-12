@@ -3,6 +3,7 @@ import 'package:playandwin/DetailScreen/QuizDetail.dart';
 import 'package:playandwin/MainScreen/RankPage.dart';
 
 import '../DetailScreen/QuizAnswer.dart';
+import '../DetailScreen/RankHistory.dart';
 import '../util/colors.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -143,19 +144,30 @@ class HomeScreen extends StatelessWidget {
                             Expanded(
                               child: Stack(
                                 children: [
-                                  Card(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                    color: cardColor,
-                                    elevation: 5,
-                                    child: Container(
-                                      height: MediaQuery.of(context).size.width > 768 ? 100 : 150,
-                                      width: MediaQuery.of(context).size.width < 600 ? double.infinity : 400,
-                                      child: Center(
-                                        child: Text(
-                                          'Rank',
-                                          style: TextStyle(fontSize: 18,color: Colors.white),
+                                  GestureDetector(
+                                    onTap: ()
+                                    {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (BuildContext context) => RankHistory(),
+                                        ),
+                                      );
+                                    },
+                                    child: Card(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10.0),
+                                      ),
+                                      color: cardColor,
+                                      elevation: 5,
+                                      child: Container(
+                                        height: MediaQuery.of(context).size.width > 768 ? 100 : 150,
+                                        width: MediaQuery.of(context).size.width < 600 ? double.infinity : 400,
+                                        child: Center(
+                                          child: Text(
+                                            'Rank History',
+                                            style: TextStyle(fontSize: 18,color: Colors.white),
+                                          ),
                                         ),
                                       ),
                                     ),
